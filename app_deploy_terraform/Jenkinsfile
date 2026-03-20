@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        AWS_CREDS = credentials('srini-aws-personal')
     }
 
     stages {
@@ -14,12 +13,13 @@ pipeline {
             }
         }
 
-        // 👇 ADD YOUR NEW STAGE HERE
         stage('Terraform') {
             steps {
                 dir('app_deploy_terraform/terraform') {
                     sh '''
-                        terraform --version
+                        export AWS_ACCESS_KEY_ID=$AWS_CREDS_USR
+                        export AWS_SECRET_ACCESS_KEY=$AWS_CREDS_PSW
+
                         terraform init
                         terraform plan
                         terraform apply -auto-approve
